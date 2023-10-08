@@ -34,6 +34,38 @@ let data = [{
         display: HTMLDivElement,
         displaystate: HTMLDivElement
     },
+    penaltyh1: {
+        state: false,
+        countdown: true,
+        last: new Date(),
+        current: 0,
+        display: HTMLDivElement,
+        displaystate: HTMLDivElement
+    },
+    penaltyh2: {
+        state: false,
+        countdown: true,
+        last: new Date(),
+        current: 0,
+        display: HTMLDivElement,
+        displaystate: HTMLDivElement
+    },
+    penaltyg1: {
+        state: false,
+        countdown: true,
+        last: new Date(),
+        current: 0,
+        display: HTMLDivElement,
+        displaystate: HTMLDivElement
+    },
+    penaltyg2: {
+        state: false,
+        countdown: true,
+        last: new Date(),
+        current: 0,
+        display: HTMLDivElement,
+        displaystate: HTMLDivElement
+    },
     home: {
         current: 0,
         scoreDisplay: HTMLDivElement,
@@ -63,6 +95,7 @@ function main() {
         ipc.send('open-about-program');
     });
 }
+
 
 /**
  * Creates a new scoreboard and assigns the related information and nodes to the data object.
@@ -117,6 +150,7 @@ function newscoreboardtab(name) {
         data[name].tab.innerText = newtitle;
         ipcToScoreboard(name, 'title-set', newtitle);
     });
+    
 
     // clock controls
     tr.controls.querySelector('#clock-toggle').addEventListener('click', () => {
@@ -139,11 +173,38 @@ function newscoreboardtab(name) {
     // Also allow easy incrementing of clock
     tr.controls.querySelector('#increase-clock').addEventListener('click', () => {
         clockset(name, gir(data[name].clock.current + 1000, 0, 5999000));
+        penalty_inc(name);
     });
+
+
 
     tr.controls.querySelector('#decrease-clock').addEventListener('click', () => {
         clockset(name, gir(data[name].clock.current - 1000, 0, 5999000));
+        penalty_dec(name);
     });
+
+    // Penalties 
+
+    // Add event listeners for guest penalty controls
+    tr.controls.querySelector('#penalty-set-submit-home').addEventListener('click', () => {
+        setPenalty(name, data[name].penaltyh1, 'home');
+    });
+    
+    // Add event listeners for guest penalty controls
+    tr.controls.querySelector('#penalty-set-submit-guest').addEventListener('click', () => {
+        setPenalty(name, data[name].penaltyg1, 'guest');
+    });
+
+    // Add event listeners for guest penalty controls
+    tr.controls.querySelector('#penalty-set-submit-home2').addEventListener('click', () => {
+        setPenalty2(name, data[name].penaltyh2, 'home');
+    });
+
+    // Add event listeners for guest penalty controls
+    tr.controls.querySelector('#penalty-set-submit-guest2').addEventListener('click', () => {
+        setPenalty2(name, data[name].penaltyg2, 'guest');
+    });
+    
 
     // Scoreboard scaling controls
     tr.controls.querySelector('#scoreboard-scaling').addEventListener('change', (e) => {
@@ -222,6 +283,170 @@ function newscoreboardtab(name) {
     return tr;
 }
 
+function setPenalty(name, data, team) {
+    const minutesInput = document.querySelector(`#penalty-set-minutes-${team}`);
+    const secondsInput = document.querySelector(`#penalty-set-seconds-${team}`);
+
+    const minutes = parseInt(minutesInput.value) || 0;
+    const seconds = parseInt(secondsInput.value) || 0;
+
+    // Calculate penalty time in milliseconds
+    const penaltyTime = (minutes * 60 + seconds);
+
+    data.current = penaltyTime * 1000;
+    // You can now send this penaltyTime to your main process via IPC
+    // and handle it accordingly
+    ipcToScoreboard(name, 'set-penalty-time', { team, time: penaltyTime });
+}
+
+function setPenalty2(name, data, team) {
+    const minutesInput = document.querySelector(`#penalty-set-minutes-${team}2`);
+    const secondsInput = document.querySelector(`#penalty-set-seconds-${team}2`);
+
+    const minutes = parseInt(minutesInput.value) || 0;
+    const seconds = parseInt(secondsInput.value) || 0;
+
+    // Calculate penalty time in milliseconds
+    const penaltyTime = (minutes * 60 + seconds);
+
+    data.current = penaltyTime * 1000;
+    // You can now send this penaltyTime to your main process via IPC
+    // and handle it accordingly
+    ipcToScoreboard(name, 'set-penalty-time2', { team, time: penaltyTime });
+}
+
+function penalty_dec(name)
+{
+    
+
+    if (data[name].penaltyh1.current === 0) {
+    }
+    else{
+    data[name].penaltyh1.current = gir(data[name].penaltyh1.current - 1000, 0, 5999000);
+    team = 'home';
+     totalSeconds = Math.floor(data[name].penaltyh1.current / 1000);
+     minutes = Math.floor(totalSeconds / 60);
+     seconds = totalSeconds % 60;
+     minutesInput = document.querySelector(`#penalty-set-minutes-home`);
+     secondsInput = document.querySelector(`#penalty-set-seconds-home`);
+    minutesInput.value = minutes; // Set minutes value
+    secondsInput.value = seconds; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time', { team, time:  data[name].penaltyh1.current/1000 });
+    }
+
+    if (data[name].penaltyg1.current === 0) {
+    }
+    else{
+    data[name].penaltyg1.current = gir(data[name].penaltyg1.current - 1000, 0, 5999000);
+    print(data[name].penaltyg1.current);
+    team = 'guest';
+     totalSeconds1 = Math.floor(data[name].penaltyg1.current / 1000);
+     minutes1 = Math.floor(totalSeconds1 / 60);
+     seconds1 = totalSeconds1 % 60;
+     minutesInput1 = document.querySelector(`#penalty-set-minutes-guest`);
+     secondsInput1 = document.querySelector(`#penalty-set-seconds-guest`);
+    minutesInput1.value = minutes1; // Set minutes value
+    secondsInput1.value = seconds1; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time', { team, time:  data[name].penaltyg1.current/1000 });
+    }
+
+    if (data[name].penaltyh2.current === 0) {
+    }
+    else{
+    data[name].penaltyh2.current = gir(data[name].penaltyh2.current - 1000, 0, 5999000);
+    team = 'home';
+     totalSeconds2 = Math.floor(data[name].penaltyh2.current / 1000);
+     minutes2 = Math.floor(totalSeconds2 / 60);
+     seconds2 = totalSeconds2 % 60;
+     minutesInput2 = document.querySelector(`#penalty-set-minutes-home2`);
+     secondsInput2 = document.querySelector(`#penalty-set-seconds-home2`);
+    minutesInput2.value = minutes2; // Set minutes value
+    secondsInput2.value = seconds2; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time2', { team, time:  data[name].penaltyh2.current/1000 });
+    }
+
+    if (data[name].penaltyg2.current === 0) {
+    }
+    else{
+    data[name].penaltyg2.current = gir(data[name].penaltyg2.current - 1000, 0, 5999000);
+    team = 'guest';
+     totalSeconds3 = Math.floor(data[name].penaltyg2.current / 1000);
+     minutes3 = Math.floor(totalSeconds3 / 60);
+     seconds3 = totalSeconds3 % 60;
+     minutesInput3 = document.querySelector(`#penalty-set-minutes-guest2`);
+     secondsInput3 = document.querySelector(`#penalty-set-seconds-guest2`);
+    minutesInput3.value = minutes3; // Set minutes value
+    secondsInput3.value = seconds3; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time2', { team, time:  data[name].penaltyg2.current/1000 });
+    }
+}
+
+function penalty_inc(name)
+{
+    
+
+    if (data[name].penaltyh1.current === 0) {
+    }
+    else{
+    data[name].penaltyh1.current = gir(data[name].penaltyh1.current + 1000, 0, 5999000);
+    team = 'home';
+     totalSeconds = Math.floor(data[name].penaltyh1.current / 1000);
+     minutes = Math.floor(totalSeconds / 60);
+     seconds = totalSeconds % 60;
+     minutesInput = document.querySelector(`#penalty-set-minutes-home`);
+     secondsInput = document.querySelector(`#penalty-set-seconds-home`);
+    minutesInput.value = minutes; // Set minutes value
+    secondsInput.value = seconds; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time', { team, time:  data[name].penaltyh1.current/1000 });
+    }
+
+    if (data[name].penaltyg1.current === 0) {
+    }
+    else{
+    data[name].penaltyg1.current = gir(data[name].penaltyg1.current + 1000, 0, 5999000);
+    print(data[name].penaltyg1.current);
+    team = 'guest';
+     totalSeconds1 = Math.floor(data[name].penaltyg1.current / 1000);
+     minutes1 = Math.floor(totalSeconds1 / 60);
+     seconds1 = totalSeconds1 % 60;
+     minutesInput1 = document.querySelector(`#penalty-set-minutes-guest`);
+     secondsInput1 = document.querySelector(`#penalty-set-seconds-guest`);
+    minutesInput1.value = minutes1; // Set minutes value
+    secondsInput1.value = seconds1; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time', { team, time:  data[name].penaltyg1.current/1000 });
+    }
+
+    if (data[name].penaltyh2.current === 0) {
+    }
+    else{
+    data[name].penaltyh2.current = gir(data[name].penaltyh2.current + 1000, 0, 5999000);
+    team = 'home';
+     totalSeconds2 = Math.floor(data[name].penaltyh2.current / 1000);
+     minutes2 = Math.floor(totalSeconds2 / 60);
+     seconds2 = totalSeconds2 % 60;
+     minutesInput2 = document.querySelector(`#penalty-set-minutes-home2`);
+     secondsInput2 = document.querySelector(`#penalty-set-seconds-home2`);
+    minutesInput2.value = minutes2; // Set minutes value
+    secondsInput2.value = seconds2; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time2', { team, time:  data[name].penaltyh2.current/1000 });
+    }
+
+    if (data[name].penaltyg2.current === 0) {
+    }
+    else{
+    data[name].penaltyg2.current = gir(data[name].penaltyg2.current + 1000, 0, 5999000);
+    team = 'guest';
+     totalSeconds3 = Math.floor(data[name].penaltyg2.current / 1000);
+     minutes3 = Math.floor(totalSeconds3 / 60);
+     seconds3 = totalSeconds3 % 60;
+     minutesInput3 = document.querySelector(`#penalty-set-minutes-guest2`);
+     secondsInput3 = document.querySelector(`#penalty-set-seconds-guest2`);
+    minutesInput3.value = minutes3; // Set minutes value
+    secondsInput3.value = seconds3; // Set seconds value
+    ipcToScoreboard(name, 'set-penalty-time2', { team, time:  data[name].penaltyg2.current/1000 });
+    }
+}
+
 /**
  * Sets the clock time then updates the clock on the control board and scoreboard.
  *
@@ -237,6 +462,8 @@ function clockset(name, miliseconds, delta) {
     }
     data[name].clock.display.innerText = `${Math.floor(data[name].clock.current / 1000 / 60).toString().padStart(2, '0')}:${Math.floor(data[name].clock.current / 1000 % 60).toString().padStart(2, '0')}`;
     ipcToScoreboard(name, 'update-clock', data[name].clock.current / 1000);
+
+
 }
 
 /**
@@ -249,6 +476,22 @@ function toggleClock(name) {
     clock.last = new Date();
     clock.state = !clock.state;
     clock.displaystate.innerText = clock.state ? 'Running' : 'Stopped';
+
+    let penalty = data[name].penaltyh1;
+    penalty.last = new Date();
+    penalty.state = !penalty.state;
+
+    penalty = data[name].penaltyh2;
+    penalty.last = new Date();
+    penalty.state = !penalty.state;
+
+    penalty = data[name].penaltyg1;
+    penalty.last = new Date();
+    penalty.state = !penalty.state;
+
+    penalty = data[name].penaltyg2;
+    penalty.last = new Date();
+    penalty.state = !penalty.state;
 }
 
 /**
@@ -334,7 +577,9 @@ function setteamlogo(home, sbid) {
 function ipcToScoreboard(name, channel, msg) {
     ipc.send('relay', name, channel, msg);
 }
-
+function updatePenaltyIPC(scoreboardIndex, team, penaltyTimeInSeconds) {
+    ipc.send('set-penalty-time', { scoreboardIndex, team, time: penaltyTimeInSeconds });
+}
 /**
  * Function to run tasks that require constant repeating.
  */
@@ -350,9 +595,86 @@ function cron() {
             ipcToScoreboard(i, 'update-clock', each.clock.current / 1000);
             data[i].clock.display.innerText = `${Math.floor(each.clock.current / 1000 / 60).toString().padStart(2, '0')}:${Math.floor(each.clock.current / 1000 % 60).toString().padStart(2, '0')}`;
         }
-    }
-    // Update Clock
 
+        if (each.penaltyh1.state) {
+            let current = new Date();
+            let change = (each.penaltyh1.countdown) ? (each.penaltyh1.last - current) : -(each.penaltyh1.last - current);
+            each.penaltyh1.current = gir(each.penaltyh1.current + change, 0, 5999000);
+            each.penaltyh1.last = current;
+            team = 'home';
+
+            const totalSeconds = Math.floor(each.penaltyh1.current / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            const minutesInput = document.querySelector(`#penalty-set-minutes-home`);
+            const secondsInput = document.querySelector(`#penalty-set-seconds-home`);
+            minutesInput.value = minutes; // Set minutes value
+            secondsInput.value = seconds; // Set seconds value
+
+            ipcToScoreboard(i, 'set-penalty-time', { team, time:  each.penaltyh1.current/1000 });
+
+        }
+
+        if (each.penaltyg1.state) {
+            let current = new Date();
+            let change = (each.penaltyg1.countdown) ? (each.penaltyg1.last - current) : -(each.penaltyg1.last - current);
+            each.penaltyg1.current = gir(each.penaltyg1.current + change, 0, 5999000);
+            each.penaltyg1.last = current;
+            team = 'guest';
+
+            const totalSeconds = Math.floor(each.penaltyg1.current / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            const minutesInput = document.querySelector(`#penalty-set-minutes-guest`);
+            const secondsInput = document.querySelector(`#penalty-set-seconds-guest`);
+            minutesInput.value = minutes; // Set minutes value
+            secondsInput.value = seconds; // Set seconds value
+
+            ipcToScoreboard(i, 'set-penalty-time', { team, time:  each.penaltyg1.current/1000 });
+        }
+
+        if (each.penaltyh2.state) {
+            let current = new Date();
+            let change = (each.penaltyh2.countdown) ? (each.penaltyh2.last - current) : -(each.penaltyh2.last - current);
+            each.penaltyh2.current = gir(each.penaltyh2.current + change, 0, 5999000);
+            each.penaltyh2.last = current;
+            team = 'home';
+
+            const totalSeconds = Math.floor(each.penaltyh2.current / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            const minutesInput = document.querySelector(`#penalty-set-minutes-home2`);
+            const secondsInput = document.querySelector(`#penalty-set-seconds-home2`);
+            minutesInput.value = minutes; // Set minutes value
+            secondsInput.value = seconds; // Set seconds value
+
+            ipcToScoreboard(i, 'set-penalty-time2', { team, time:  each.penaltyh2.current/1000 });
+
+        }
+
+        if (each.penaltyg2.state) {
+            let current = new Date();
+            let change = (each.penaltyg2.countdown) ? (each.penaltyg2.last - current) : -(each.penaltyg2.last - current);
+            each.penaltyg2.current = gir(each.penaltyg2.current + change, 0, 5999000);
+            each.penaltyg2.last = current;
+            team = 'guest';
+
+            const totalSeconds = Math.floor(each.penaltyg2.current / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            const minutesInput = document.querySelector(`#penalty-set-minutes-guest2`);
+            const secondsInput = document.querySelector(`#penalty-set-seconds-guest2`);
+            minutesInput.value = minutes; // Set minutes value
+            secondsInput.value = seconds; // Set seconds value
+
+            ipcToScoreboard(i, 'set-penalty-time2', { team, time:  each.penaltyg2.current/1000 });
+        }
+
+}
 }
 
 
@@ -402,9 +724,11 @@ ipc.on('keyboard-input', (e, msg) => {
                     break;
                 case 'increase':
                     clockset(current, 1000, true);
+                    penalty_inc(current);
                     break;
                 case 'decrease':
                     clockset(current, -1000, true);
+                    penalty_dec(current);
                     break;
             }
             break;

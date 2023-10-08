@@ -129,6 +129,59 @@ h1 {
     }
 }
 
+/* Penalty CSS */
+#penalties {
+    grid-row: 2;
+    grid-column: 2 / 5;
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    grid-gap: 1em;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+}
+
+#home-penalties
+{
+    display: grid; /* Changed to grid */
+    grid-template-rows: auto auto; /* Two rows: one for the text, one for the digits */
+    grid-gap: 0.5em; /* Space between rows */
+    
+    grid-column: 1; /* home-penalties */
+    /* grid-column: 2;   <-- You'd typically set this for #guest-penalties, but it's not necessary since it's the next item in the grid */
+    
+    box-shadow: 0px 0px 10px 0px black;
+    color: white;
+    background: black;
+    font-size: 1em;  /* Adjust the font size as needed */
+    align-items: center;
+    justify-items: center; /* Aligned content of each grid to center */
+}
+
+ #guest-penalties {
+    display: grid; /* Changed to grid */
+    grid-template-rows: auto auto; /* Two rows: one for the text, one for the digits */
+    grid-gap: 0.5em; /* Space between rows */
+    
+    grid-column: 2;
+    
+    box-shadow: 0px 0px 10px 0px black;
+    color: white;
+    background: black;
+    font-size: 1em;  /* Adjust the font size as needed */
+    align-items: center;
+    justify-items: center; /* Aligned content of each grid to center */
+}
+.penalty-digits img {
+    width: 10%;
+    /* Additional styling if needed */
+}
+
+.penalty-digits img:nth-child(3) {
+    width: 5%; /* colon's width */
+}
+
+
 #main-clock {
     grid-row: 1 / 2;
     grid-column: 2 / 5;

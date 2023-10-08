@@ -39,6 +39,15 @@ let clock = {
     digits: []
 };
 
+let penaltyTime = {
+    home: {minutes: 0, seconds: 0},
+    guest: {minutes: 0, seconds: 0},
+    digits: {
+        home: [],
+        guest: []
+    }
+};
+
 let scoreDisplays = {
     home: {
         digits: []
@@ -60,6 +69,7 @@ let teams = {
     }
 };
 
+
 function main() {
     // Setup
     // Set up clock and scoring
@@ -69,6 +79,10 @@ function main() {
     add2array(clock.dom.querySelectorAll('.digit'), clock.digits);
     add2array(scoreDisplays.home.dom.querySelectorAll('.digit'), scoreDisplays.home.digits);
     add2array(scoreDisplays.guest.dom.querySelectorAll('.digit'), scoreDisplays.guest.digits);
+
+    penaltyTime.digits.home = document.querySelector('#home-penalties').querySelectorAll('.digit');
+    penaltyTime.digits.guest = document.querySelector('#guest-penalties').querySelectorAll('.digit');
+    
 
     /**
      * 
@@ -110,6 +124,54 @@ function changeclock(seconds) {
     changedigit(clock.digits[1], Math.floor(minuteDisplay % 10));
     changedigit(clock.digits[0], Math.floor(minuteDisplay / 10));
 }
+
+function changePenaltyTime(team, timeInSeconds) {
+    // Convert the time to minutes and seconds
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+
+    // Select the penalty time elements based on the team
+    const penaltyTimeElement = document.querySelector(`#${team}-penalty-time`);
+    const penaltyDigitsElements = document.querySelectorAll(`#${team}-penalties .digit`);
+
+
+    // Update the penalty digits images
+    const minuteTens = Math.floor(minutes / 10);
+    const minuteOnes = Math.floor(minutes % 10);
+    const secondTens = Math.floor(seconds / 10);
+    const secondOnes = Math.floor(seconds % 10);
+
+    // Update the digit images using a helper function (changedigit)
+    changedigit(penaltyDigitsElements[0], minuteTens);
+    changedigit(penaltyDigitsElements[1], minuteOnes);
+    changedigit(penaltyDigitsElements[2], secondTens);
+    changedigit(penaltyDigitsElements[3], secondOnes);
+}
+
+
+function changePenaltyTime2(team, timeInSeconds) {
+    // Convert the time to minutes and seconds
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+
+    // Select the penalty time elements based on the team
+
+    const penaltyDigitsElements = document.querySelectorAll(`#${team}-penalties .digit2`);
+    // Update the penalty digits images
+    const minuteTens = Math.floor(minutes / 10);
+    const minuteOnes = Math.floor(minutes % 10);
+    const secondTens = Math.floor(seconds / 10);
+    const secondOnes = Math.floor(seconds % 10);
+
+    // Update the digit images using a helper function (changedigit)
+    changedigit(penaltyDigitsElements[0], minuteTens);
+    changedigit(penaltyDigitsElements[1], minuteOnes);
+    changedigit(penaltyDigitsElements[2], secondTens);
+    changedigit(penaltyDigitsElements[3], secondOnes);
+}
+
+
+
 /**
  * Changes score that is shown on the scoreboard.
  *
@@ -151,4 +213,13 @@ ipc.on('set-name', (e, msg) => {
 });
 ipc.on('scale', (e, msg) => {
     document.body.style.zoom = msg;
+});
+ipc.on('set-penalty-time', (e, msg) => {
+    // msg should contain {team: 'home' or 'guest', time: number in seconds}
+    changePenaltyTime(msg.team, msg.time);
+});
+
+ipc.on('set-penalty-time2', (e, msg) => {
+    // msg should contain {team: 'home' or 'guest', time: number in seconds}
+    changePenaltyTime2(msg.team, msg.time);
 });
